@@ -15,20 +15,18 @@
 # Declare:
 #	$server_names		@hash	running virtual hosts on declared server
 #	$stand_alone		@array	all stand alone servers
-#	$vm_hosts		@array	all vm hosting nodes
+#	$vm_hosts			@array	all vm hosting nodes
 #	$vm_instances		@array	all virtual instances
 #	$all_servers		@array	all running servers
 #	$front_end_servers	@array	front end servers
 #	$server_count		@int	number of servers
-#	$all_count		@int	number of all hosts
+#	$all_count			@int	number of all hosts
 #	$front_end_count	@int	number of front end servers
 
 servers=(
 	"pepe.rcp"		\
 	"liza.rcp"		\
 	"edo.rcp"		\
-	"greeny.rcp"	\
-#	"jera.rcp"		\
 	"ceuka.rcp"		\
 	"giten.rcp"		\
 )
