@@ -1,0 +1,75 @@
+#!/bin/bash
+#
+# Name:
+# 	host_names
+#
+# Description:
+#	declare some variables and function for pleiades hosts namagement
+#
+# Author:
+#	Janez Jezersek <janez.jezersek@ijs.si>
+#
+# Date:
+#	17. 2. 2015
+#
+# Declare:
+#	$server_names		@hash	running virtual hosts on declared server
+#	$stand_alone		@array	all stand alone servers
+#	$vm_hosts		@array	all vm hosting nodes
+#	$vm_instances		@array	all virtual instances
+#	$all_servers		@array	all running servers
+#	$front_end_servers	@array	front end servers
+#	$server_count		@int	number of servers
+#	$all_count		@int	number of all hosts
+#	$front_end_count	@int	number of front end servers
+
+servers=(
+	"pepe.rcp"		\
+	"liza.rcp"		\
+	"edo.rcp"		\
+	"greeny.rcp"	\
+#	"jera.rcp"		\
+	"ceuka.rcp"		\
+	"giten.rcp"		\
+)
+declare -A server_names
+stand_alone=()
+vm_hosts=()
+vm_instances=()
+
+function remote_exec_catch_output() {
+	local remote_host=$1
+	local command=$2
+	remote_output=$(ssh root@$remote_host "$command")
+}
+
+function remote_exec() {
+	local remote_host=$1
+	local command=$2
+	ssh root@$remote_host "$command"
+}
+
+for name in ${servers[@]}; do
+	remote_exec_catch_output $name "virsh list 2> /dev/null |grep running |awk '{print \$2}'"
+        if [[ "$remote_output" != ""  ]]; then
+		server_names[$name]=$remote_output
+		vm_hosts+=($name)
+	else
+		server_names[$name]=""
+		stand_alone+=($name)
+	fi
+done
+
+for name in "${!server_names[@]}"; do
+	for vn in ${server_names[$name]}; do
+		vm_instances+=($vn)
+	done
+done
+
+all_servers=($(printf "%s\n " "${vm_hosts[@]} ${stand_alone[@]} ${vm_instances[@]}" | sort -u))
+all_count=${#all_servers[@]}
+
+front_end_servers=($(printf "%s\n " "${stand_alone[@]} ${vm_instances[@]}" | sort -u))
+front_end_count=${#front_end_servers[@]}
+
+server_count=${#server_names[@]}
